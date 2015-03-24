@@ -90,10 +90,11 @@ execl(const char *file, const char *arg, ...) {
 	}
 
 	int save_errno;
+        char *file_in_chroot = PSEUDO_ROOT_PATH(AT_FDCWD, file, 0);
 
 	/* exec*() use this to restore the sig mask */
 	pseudo_saved_sigmask = saved;
-	rc = wrap_execv(file, argv);
+	rc = wrap_execv(file_in_chroot, argv);
 
 	save_errno = errno;
 	pseudo_droplock();
@@ -101,6 +102,7 @@ execl(const char *file, const char *arg, ...) {
 	pseudo_debug(PDBGF_WRAPPER, "completed: execl\n");
 	errno = save_errno;
 	free(argv);
+	free(file_in_chroot);
 	return rc;
 }
 
@@ -135,10 +137,11 @@ execlp(const char *file, const char *arg, ...) {
 	}
 
 	int save_errno;
+        char *file_in_chroot = PSEUDO_ROOT_PATH(AT_FDCWD, file, 0);
 
 	/* exec*() use this to restore the sig mask */
 	pseudo_saved_sigmask = saved;
-	rc = wrap_execvp(file, argv);
+	rc = wrap_execvp(file_in_chroot, argv);
 
 	save_errno = errno;
 	pseudo_droplock();
@@ -146,6 +149,7 @@ execlp(const char *file, const char *arg, ...) {
 	pseudo_debug(PDBGF_WRAPPER, "completed: execlp\n");
 	errno = save_errno;
 	free(argv);
+        free(file_in_chroot);
 	return rc;
 }
 
@@ -181,10 +185,11 @@ execle(const char *file, const char *arg, ...) {
 	}
 
 	int save_errno;
+        char *file_in_chroot = PSEUDO_ROOT_PATH(AT_FDCWD, file, 0);
 
 	/* exec*() use this to restore the sig mask */
 	pseudo_saved_sigmask = saved;
-	rc = wrap_execve(file, argv, envp);
+	rc = wrap_execve(file_in_chroot, argv, envp);
 
 	save_errno = errno;
 	pseudo_droplock();
@@ -192,6 +197,7 @@ execle(const char *file, const char *arg, ...) {
 	pseudo_debug(PDBGF_WRAPPER, "completed: execle\n");
 	errno = save_errno;
 	free(argv);
+	free(file_in_chroot);
 	return rc;
 }
 
@@ -216,16 +222,18 @@ execv(const char *file, char *const *argv) {
 	}
 
 	int save_errno;
+        char *file_in_chroot = PSEUDO_ROOT_PATH(AT_FDCWD, file, 0);
 			
 	/* exec*() use this to restore the sig mask */
 	pseudo_saved_sigmask = saved;
-	rc = wrap_execv(file, argv);
+	rc = wrap_execv(file_in_chroot, argv);
 		
 	save_errno = errno;
 	pseudo_droplock();
 	sigprocmask(SIG_SETMASK, &saved, NULL);
 	pseudo_debug(PDBGF_WRAPPER, "completed: execv\n");
 	errno = save_errno;
+	free(file_in_chroot);
 	return rc;
 }
 
@@ -250,16 +258,18 @@ execve(const char *file, char *const *argv, char *const *envp) {
 	}
 
 	int save_errno;
+        char *file_in_chroot = PSEUDO_ROOT_PATH(AT_FDCWD, file, 0);
 			
 	/* exec*() use this to restore the sig mask */
 	pseudo_saved_sigmask = saved;
-	rc = wrap_execve(file, argv, envp);
+	rc = wrap_execve(file_in_chroot, argv, envp);
 		
 	save_errno = errno;
 	pseudo_droplock();
 	sigprocmask(SIG_SETMASK, &saved, NULL);
 	pseudo_debug(PDBGF_WRAPPER, "completed: execve\n");
 	errno = save_errno;
+	free(file_in_chroot);
 	return rc;
 }
 
@@ -284,16 +294,18 @@ execvp(const char *file, char *const *argv) {
 	}
 
 	int save_errno;
+        char *file_in_chroot = PSEUDO_ROOT_PATH(AT_FDCWD, file, 0);
 			
 	/* exec*() use this to restore the sig mask */
 	pseudo_saved_sigmask = saved;
-	rc = wrap_execvp(file, argv);
+	rc = wrap_execvp(file_in_chroot, argv);
 		
 	save_errno = errno;
 	pseudo_droplock();
 	sigprocmask(SIG_SETMASK, &saved, NULL);
 	pseudo_debug(PDBGF_WRAPPER, "completed: execvp\n");
 	errno = save_errno;
+	free(file_in_chroot);
 	return rc;
 }
 
