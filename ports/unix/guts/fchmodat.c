@@ -8,7 +8,6 @@
  */
 	PSEUDO_STATBUF buf;
 	int save_errno = errno;
-	static int picky_fchmodat = 0;
 
 #ifdef PSEUDO_NO_REAL_AT_FUNCTIONS
 	if (dirfd != AT_FDCWD) {
@@ -16,16 +15,6 @@
 		return -1;
 	}
 	if (flags & AT_SYMLINK_NOFOLLOW) {
-		/* Linux, as of this writing, will always reject this.
-		 * GNU tar relies on getting the rejection. To cut down
-		 * on traffic, we check for the failure, and if we saw
-		 * a failure previously, we reject it right away and tell
-		 * the caller to retry.
-		 */
-		if (picky_fchmodat) {
-			errno = ENOTSUP;
-			return -1;
-		}
 		rc = base_lstat(path, &buf);
 	} else {
 		rc = base_stat(path, &buf);
@@ -72,7 +61,6 @@
 	 * of doing the fallback.
 	 */
 	if (rc == -1 && errno == ENOTSUP && (flags & AT_SYMLINK_NOFOLLOW)) {
-		picky_fchmodat = 1;
 		return -1;
 	}
 #endif
